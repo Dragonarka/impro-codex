@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Códice de Impro — Mi arsenal de jutsus</title>
+  <meta name="description" content="Códice personal de improvisación: conceptos de baile guardados como jutsus, con sonido, gif y ejercicio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-top">
+      <h1 class="title">📜 Códice de Impro</h1>
+      <p class="subtitle">Mi arsenal de jutsus para improvisar — conceptos, sonidos y drills que quiero recordar y reusar.</p>
+    </div>
+
+    <div class="toolbar">
+      <input
+        id="search"
+        type="search"
+        class="search"
+        placeholder="Buscar… (kamehameha, dinámica, freeze)"
+        autocomplete="off"
+        aria-label="Buscar movimientos"
+      />
+
+      <div class="metronome" id="metronome" aria-label="Metrónomo">
+        <button id="metro-toggle" class="metro-btn" title="Iniciar / detener metrónomo">🥁 <span id="metro-state">Play</span></button>
+        <div class="metro-bpm">
+          <button id="bpm-down" class="metro-nudge" aria-label="Bajar BPM">−</button>
+          <input id="bpm" class="bpm-input" type="number" min="30" max="240" value="120" aria-label="BPM" />
+          <span class="bpm-label">BPM</span>
+          <button id="bpm-up" class="metro-nudge" aria-label="Subir BPM">+</button>
+        </div>
+        <button id="tap" class="metro-btn ghost" title="Tocá al ritmo para fijar el tempo">Tap</button>
+      </div>
+    </div>
+
+    <div class="tags" id="tag-filters" aria-label="Filtrar por etiqueta"></div>
+  </header>
+
+  <main>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>Nada por acá. Probá otra búsqueda o etiqueta.</p>
+  </main>
+
+  <footer class="site-footer">
+    <span id="count"></span>
+    <span class="dot">·</span>
+    <span>Para añadir un movimiento, editá <code>data/moves.js</code>.</span>
+  </footer>
+
+  <!-- Lightbox para gifs -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar">✕</button>
+    <img id="lightbox-img" alt="" />
+  </div>
+
+  <script src="data/moves.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
