@@ -67,6 +67,13 @@ const Metro = (() => {
   const toggleBtn = document.getElementById("metro-toggle");
   const stateLabel = document.getElementById("metro-state");
   const bpmInput = document.getElementById("bpm");
+  const beatDot = document.getElementById("beat-dot");
+
+  function flashBeat() {
+    if (!beatDot) return;
+    beatDot.classList.add("beat");
+    setTimeout(() => beatDot.classList.remove("beat"), 110);
+  }
 
   function click(time) {
     const osc = ctx.createOscillator();
@@ -78,6 +85,8 @@ const Metro = (() => {
     osc.connect(gain).connect(ctx.destination);
     osc.start(time);
     osc.stop(time + 0.06);
+    // Pulso visual sincronizado con el click de audio.
+    setTimeout(flashBeat, Math.max(0, (time - ctx.currentTime) * 1000));
   }
 
   function scheduler() {
@@ -101,6 +110,7 @@ const Metro = (() => {
     playing = false;
     clearInterval(timer);
     toggleBtn.classList.remove("playing");
+    if (beatDot) beatDot.classList.remove("beat");
     stateLabel.textContent = "Play";
   }
 
@@ -173,9 +183,26 @@ function el(tag, cls, html) {
   return e;
 }
 
-function renderCard(move) {
+/* Color de chakra por referencia. Se puede forzar con move.accent en moves.js. */
+const SOURCE_COLORS = {
+  "Naruto": "#ff7b3d",
+  "Dragon Ball Z": "#4ea8ff",
+  "Woody Woodpecker": "#ffd24a",
+};
+const PALETTE = ["#ff7b3d", "#4ea8ff", "#b06bff", "#46d19e", "#ff5d8f", "#ffd24a", "#3ddad7"];
+function accentFor(move) {
+  if (move.accent) return move.accent;
+  if (SOURCE_COLORS[move.source]) return SOURCE_COLORS[move.source];
+  let h = 0;
+  for (const ch of move.id || "") h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return PALETTE[h % PALETTE.length];
+}
+
+function renderCard(move, index) {
   const card = el("article", "card");
   card.id = "move-" + move.id;
+  card.style.setProperty("--card-accent", accentFor(move));
+  card.style.animationDelay = Math.min((index || 0) * 55, 600) + "ms";
 
   // Media (gif o emoji)
   const media = el("div", "card-media");
@@ -257,7 +284,7 @@ function render() {
   stopCurrentAudio();
   const visible = moves.filter(matches);
   grid.innerHTML = "";
-  visible.forEach((m) => grid.appendChild(renderCard(m)));
+  visible.forEach((m, i) => grid.appendChild(renderCard(m, i)));
   emptyMsg.hidden = visible.length > 0;
   countEl.textContent =
     visible.length + (visible.length === 1 ? " movimiento" : " movimientos");

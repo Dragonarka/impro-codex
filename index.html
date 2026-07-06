@@ -5,28 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Códice de Impro — Mi arsenal de jutsus</title>
   <meta name="description" content="Códice personal de improvisación: conceptos de baile guardados como jutsus, con sonido, gif y ejercicio." />
+  <meta name="theme-color" content="#0b0d18" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>" />
 </head>
 <body>
+  <!-- Fondo animado de chakra -->
+  <div class="aura" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+    <span class="grain"></span>
+  </div>
+
   <header class="site-header">
-    <div class="header-top">
-      <h1 class="title">📜 Códice de Impro</h1>
-      <p class="subtitle">Mi arsenal de jutsus para improvisar — conceptos, sonidos y drills que quiero recordar y reusar.</p>
+    <div class="hero">
+      <div class="chakra" aria-hidden="true">
+        <span class="chakra-ring"></span>
+        <span class="chakra-core">📜</span>
+      </div>
+      <div class="hero-text">
+        <h1 class="title" data-text="Códice de Impro">Códice de Impro</h1>
+        <p class="subtitle">Mi arsenal de <b>jutsus</b> para improvisar bailando. Conceptos, sonidos y drills que quiero recordar y reusar.</p>
+      </div>
     </div>
 
     <div class="toolbar">
-      <input
-        id="search"
-        type="search"
-        class="search"
-        placeholder="Buscar… (kamehameha, dinámica, freeze)"
-        autocomplete="off"
-        aria-label="Buscar movimientos"
-      />
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">🔎</span>
+        <input
+          id="search"
+          type="search"
+          class="search"
+          placeholder="Buscar… kamehameha, dinámica, freeze"
+          autocomplete="off"
+          aria-label="Buscar movimientos"
+        />
+      </div>
 
       <div class="metronome" id="metronome" aria-label="Metrónomo">
+        <span class="beat-dot" id="beat-dot" aria-hidden="true"></span>
         <button id="metro-toggle" class="metro-btn" title="Iniciar / detener metrónomo">🥁 <span id="metro-state">Play</span></button>
         <div class="metro-bpm">
           <button id="bpm-down" class="metro-nudge" aria-label="Bajar BPM">−</button>
@@ -43,7 +64,7 @@
 
   <main>
     <div class="grid" id="grid"></div>
-    <p class="empty" id="empty" hidden>Nada por acá. Probá otra búsqueda o etiqueta.</p>
+    <p class="empty" id="empty" hidden>Nada por acá 🍃 — probá otra búsqueda o etiqueta.</p>
   </main>
 
   <footer class="site-footer">
