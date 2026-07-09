@@ -37,14 +37,17 @@ const BACHATA = {
   // Pasos básicos — mi guía de elementos disponibles, agrupada por tipo
   steps: [
     { group: "En el puesto", items: [
-      "Básico normal estacionado", "Bolero en el puesto", "Ajuste (paso a paso)",
+      "Básico normal estacionado", "Básico de Bonao", "Bolero en el puesto", "Ajuste (paso a paso)",
     ] },
     { group: "Con rebote / cadencia", items: [
       "Rebote / el de saltico", "Caballo", "Chachachá", "Twist", "Péndulo",
     ] },
     { group: "Desplazamientos", items: [
-      "Box step", "Cuadro", "Línea bachata", "Lateral (el de Carlitos)",
+      "Box step", "Cuadro", "Cuadro batey", "Línea bachata", "Lateral (el de Carlitos)",
       "Side cross (Madrid) / Diagonal", "Media luna", "Básico en V", "Cruzando por detrás",
+    ] },
+    { group: "Piso & deslices", items: [
+      "Dibujar en el suelo", "Deslices",
     ] },
   ],
 
