@@ -13,8 +13,8 @@
   /* ---------- Definición de instrumentos (samples reales) ---------- */
   // preset: pasos activos (0..15). Los sonidos se cargan desde assets/audio/.
   const INSTRUMENTS = [
-    { id: "guira",    name: "Güira",    accent: "#46d19e", preset: [0, 2, 4, 6, 8, 10, 12, 14] },
-    { id: "bongo",    name: "Bongó",    accent: "#ff7b3d", preset: [4, 6, 12, 14] },
+    { id: "guira",    name: "Güira",    accent: "#46d19e", preset: Array.from({ length: 16 }, (_, i) => i) },
+    { id: "bongo",    name: "Bongó",    accent: "#ff7b3d", preset: [0, 2, 4, 6, 8, 10, 12, 14] },
     { id: "bajo",     name: "Bajo",     accent: "#4ea8ff", preset: [0, 4, 8, 12] },
     { id: "guitarra", name: "Guitarra", accent: "#b06bff", preset: [2, 6, 10, 14] },
   ];
@@ -24,10 +24,10 @@
   const DOWN = [0, 2, 4, 6, 8, 10, 12, 14];
   // Secciones de una canción de bachata — cada una arma su combinación de instrumentos.
   const SECTIONS = {
-    intro:   { bajo: [0, 8],           guira: [0, 4, 8, 12] },
-    verso:   { bajo: [0, 4, 8, 12],    guira: DOWN,          bongo: [4, 6, 12, 14] },
-    majao:   { bajo: [0, 4, 8, 12],    guira: ALL16,         bongo: DOWN,           guitarra: [2, 6, 10, 14] },
-    derecho: { bajo: [0, 4, 8, 12],    guira: ALL16,         bongo: [4, 6, 12, 14], guitarra: [2, 6, 10, 14] },
+    intro:   { bajo: [0, 8],        guira: DOWN },
+    verso:   { bajo: [0, 4, 8, 12], guira: ALL16, bongo: DOWN },
+    majao:   { bajo: [0, 4, 8, 12], guira: ALL16, bongo: ALL16, guitarra: [2, 6, 10, 14] },
+    derecho: { bajo: [0, 4, 8, 12], guira: ALL16, bongo: DOWN,  guitarra: [2, 6, 10, 14] },
   };
 
   /* ---------- Samples reales (assets/audio) ---------- */
@@ -42,6 +42,7 @@
     guitarra_e4:  "assets/audio/guitarra_e4.mp3",
   };
   const buffers = {};
+  const meta = {}; // name -> { gain: makeup de normalización, offset: onset en seg }
   let loaded = false, loading = false;
 
   /* ---------- Estado ---------- */
@@ -72,6 +73,19 @@
     reverb.connect(rGain); rGain.connect(comp); // sala pequeña, da aire
   }
 
+  // Analiza un buffer: pico (para normalizar) y onset (para recortar silencio inicial).
+  function analyze(buf) {
+    const d = buf.getChannelData(0);
+    let peak = 0;
+    for (let i = 0; i < d.length; i++) { const a = Math.abs(d[i]); if (a > peak) peak = a; }
+    const thr = Math.max(0.01, peak * 0.12);
+    let onset = 0;
+    for (let i = 0; i < d.length; i++) { if (Math.abs(d[i]) > thr) { onset = i; break; } }
+    const gain = peak > 0 ? Math.min(45, 0.9 / peak) : 1; // makeup, con tope
+    const offset = Math.max(0, onset / buf.sampleRate - 0.003); // deja 3ms de pre-ataque
+    return { gain, offset };
+  }
+
   async function loadSamples() {
     if (loaded || loading) return;
     loading = true; setLoadingUI(true); ensureCtx();
@@ -79,11 +93,13 @@
       Object.entries(FILES).map(async ([k, url]) => {
         try {
           const ab = await (await fetch(url)).arrayBuffer();
-          buffers[k] = await ctx.decodeAudioData(ab);
+          const buf = await ctx.decodeAudioData(ab);
+          buffers[k] = buf; meta[k] = analyze(buf);
         } catch (e) { console.warn("No se pudo cargar", url, e); }
       })
     );
     loaded = true; loading = false; setLoadingUI(false);
+    if (typeof window !== "undefined") window.__simMeta = meta; // debug
   }
 
   function setLoadingUI(on) {
@@ -93,35 +109,43 @@
     else if (!playing) playBtn.innerHTML = "▶ <span>Play</span>";
   }
 
-  // Reproduce un sample con ganancia, tono (rate) y envío a reverb.
-  function playSample(name, time, gain, rate, send) {
+  // Reproduce un sample: normaliza, recorta silencio inicial, tono, reverb y filtro opcional.
+  function playSample(name, time, gain, rate, send, hp) {
     const buf = buffers[name]; if (!buf) return;
+    const m = meta[name] || { gain: 1, offset: 0 };
     const src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate || 1;
-    const g = ctx.createGain(); g.gain.value = gain == null ? 1 : gain;
-    src.connect(g); g.connect(master);
+    const g = ctx.createGain(); g.gain.value = (gain == null ? 1 : gain) * m.gain;
+    let node = src;
+    if (hp) { const f = ctx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 2200; f.Q.value = 0.7; src.connect(f); node = f; }
+    node.connect(g); g.connect(master);
     if (send > 0 && reverb) { const s = ctx.createGain(); s.gain.value = send; g.connect(s); s.connect(reverb); }
-    src.start(time);
+    src.start(time, m.offset || 0);
   }
 
   let rrIdx = 0;
   const rr = (arr) => arr[rrIdx++ % arr.length];
 
   // Traduce cada instrumento a samples reales según el paso/acento.
+  // hp=true en la güira → sonido metálico y seco (no retumba).
   function triggerVoice(id, time, s, accent) {
     const beat = s / 2 + 1; // nº de tiempo en los pasos "fuertes"
     if (id === "guira") {
-      if (accent) playSample("guira_accent", time, 0.5, 1, 0.08);
-      else playSample(rr(["guira_hit1", "guira_hit2"]), time, 0.36, 1, 0.06);
+      // Motor de la bachata: cha-ka continuo. Acento en los tiempos fuertes.
+      // Micro-variación de tono para que no suene repetido (usamos el sample más limpio).
+      const rate = 0.99 + Math.random() * 0.03;
+      playSample("guira_hit2", time, accent ? 0.95 : 0.5, rate, 0.05, true);
     } else if (id === "bongo") {
-      // martillo: hembra (agudo) en tiempos pares, macho (grave) en impares
+      // Martillo: alterna hembra (agudo) / macho (grave); acento en 3 y 7.
       const hi = beat % 2 === 0;
-      playSample(hi ? "bongo_hi" : "bongo_lo", time, accent ? 0.85 : 0.7, 1, 0.13);
+      const acc = beat === 3 || beat === 7;
+      playSample(hi ? "bongo_hi" : "bongo_lo", time, acc ? 0.95 : 0.62, 1, 0.12);
     } else if (id === "bajo") {
-      const alt = beat === 3 || beat === 7; // leve movimiento
-      playSample("bajo", time, 0.9, alt ? 1.06 : 1.0, 0.04);
+      const push = !Number.isInteger(beat); // anticipación en las "y"
+      playSample("bajo", time, push ? 0.7 : 0.95, push ? 1.06 : 1.0, 0.04);
     } else if (id === "guitarra") {
-      playSample("guitarra_a3", time, 0.5, 1, 0.18);
-      playSample("guitarra_e4", time + 0.012, 0.4, 1, 0.18);
+      // Rasgueo del requinto: dos cuerdas apenas escalonadas.
+      playSample("guitarra_a3", time, 0.5, 1, 0.16);
+      playSample("guitarra_e4", time + 0.012, 0.38, 1, 0.16);
     }
   }
 
