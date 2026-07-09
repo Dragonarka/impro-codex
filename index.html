@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Códice de Impro — Mi arsenal de jutsus</title>
-  <meta name="description" content="Códice personal de improvisación: conceptos de baile guardados como jutsus, con sonido, gif y ejercicio." />
+  <title>Códice de Impro — Bachata & Jutsus</title>
+  <meta name="description" content="Cheat sheets de bachata e improvisación + simulador de ritmo por instrumentos. Optimizado para TV." />
   <meta name="theme-color" content="#0b0d18" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,7 +13,6 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>" />
 </head>
 <body>
-  <!-- Fondo animado de chakra -->
   <div class="aura" aria-hidden="true">
     <span class="orb orb-1"></span>
     <span class="orb orb-2"></span>
@@ -21,57 +20,54 @@
     <span class="grain"></span>
   </div>
 
-  <header class="site-header">
-    <div class="hero">
-      <div class="chakra" aria-hidden="true">
-        <span class="chakra-ring"></span>
-        <span class="chakra-core">📜</span>
-      </div>
-      <div class="hero-text">
-        <h1 class="title" data-text="Códice de Impro">Códice de Impro</h1>
-        <p class="subtitle">Mi arsenal de <b>jutsus</b> para improvisar bailando. Conceptos, sonidos y drills que quiero recordar y reusar.</p>
-      </div>
+  <!-- Barra superior con pestañas (navegable con teclas 1/2/3 y flechas) -->
+  <nav class="topnav">
+    <div class="brand"><span class="brand-orb">📜</span> Códice</div>
+    <div class="tabs" role="tablist">
+      <button class="tab" data-view="codice" role="tab">🎴 <span>Códice</span></button>
+      <button class="tab" data-view="bachata" role="tab">💃 <span>Bachata</span></button>
+      <button class="tab" data-view="sim" role="tab">🥁 <span>Simulador</span></button>
     </div>
-
-    <div class="toolbar">
-      <div class="search-wrap">
-        <span class="search-icon" aria-hidden="true">🔎</span>
-        <input
-          id="search"
-          type="search"
-          class="search"
-          placeholder="Buscar… kamehameha, dinámica, freeze"
-          autocomplete="off"
-          aria-label="Buscar movimientos"
-        />
-      </div>
-
-      <div class="metronome" id="metronome" aria-label="Metrónomo">
-        <span class="beat-dot" id="beat-dot" aria-hidden="true"></span>
-        <button id="metro-toggle" class="metro-btn" title="Iniciar / detener metrónomo">🥁 <span id="metro-state">Play</span></button>
-        <div class="metro-bpm">
-          <button id="bpm-down" class="metro-nudge" aria-label="Bajar BPM">−</button>
-          <input id="bpm" class="bpm-input" type="number" min="30" max="240" value="120" aria-label="BPM" />
-          <span class="bpm-label">BPM</span>
-          <button id="bpm-up" class="metro-nudge" aria-label="Subir BPM">+</button>
-        </div>
-        <button id="tap" class="metro-btn ghost" title="Tocá al ritmo para fijar el tempo">Tap</button>
-      </div>
-    </div>
-
-    <div class="tags" id="tag-filters" aria-label="Filtrar por etiqueta"></div>
-  </header>
+    <div class="nav-hint" aria-hidden="true">◀ ▶ / 1·2·3</div>
+  </nav>
 
   <main>
-    <div class="grid" id="grid"></div>
-    <p class="empty" id="empty" hidden>Nada por acá 🍃 — probá otra búsqueda o etiqueta.</p>
-  </main>
+    <!-- ========== VISTA CÓDICE ========== -->
+    <section id="view-codice" class="view">
+      <div class="view-head">
+        <h1 class="view-title">Arsenal de <b>jutsus</b></h1>
+        <div class="tools">
+          <div class="search-wrap">
+            <span class="search-icon" aria-hidden="true">🔎</span>
+            <input id="search" type="search" class="search" placeholder="Buscar…" autocomplete="off" aria-label="Buscar movimientos" />
+          </div>
+          <div class="metronome" id="metronome" aria-label="Metrónomo">
+            <span class="beat-dot" id="beat-dot" aria-hidden="true"></span>
+            <button id="metro-toggle" class="metro-btn" title="Metrónomo">🥁 <span id="metro-state">Play</span></button>
+            <div class="metro-bpm">
+              <button id="bpm-down" class="metro-nudge" aria-label="Bajar BPM">−</button>
+              <input id="bpm" class="bpm-input" type="number" min="30" max="240" value="120" aria-label="BPM" />
+              <button id="bpm-up" class="metro-nudge" aria-label="Subir BPM">+</button>
+            </div>
+            <button id="tap" class="metro-btn ghost" title="Tap tempo">Tap</button>
+          </div>
+        </div>
+      </div>
+      <div class="tags" id="tag-filters" aria-label="Filtrar por etiqueta"></div>
+      <div class="grid" id="grid"></div>
+      <p class="empty" id="empty" hidden>Nada por acá 🍃</p>
+    </section>
 
-  <footer class="site-footer">
-    <span id="count"></span>
-    <span class="dot">·</span>
-    <span>Para añadir un movimiento, editá <code>data/moves.js</code>.</span>
-  </footer>
+    <!-- ========== VISTA BACHATA (cheat sheet) ========== -->
+    <section id="view-bachata" class="view" hidden>
+      <div id="bachata-board" class="board"></div>
+    </section>
+
+    <!-- ========== VISTA SIMULADOR ========== -->
+    <section id="view-sim" class="view" hidden>
+      <div id="sim-root"></div>
+    </section>
+  </main>
 
   <!-- Lightbox para gifs -->
   <div class="lightbox" id="lightbox" hidden>
@@ -80,6 +76,9 @@
   </div>
 
   <script src="data/moves.js"></script>
+  <script src="data/bachata.js"></script>
   <script src="app.js"></script>
+  <script src="bachata.js"></script>
+  <script src="simulator.js"></script>
 </body>
 </html>

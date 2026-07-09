@@ -286,8 +286,9 @@ function render() {
   grid.innerHTML = "";
   visible.forEach((m, i) => grid.appendChild(renderCard(m, i)));
   emptyMsg.hidden = visible.length > 0;
-  countEl.textContent =
-    visible.length + (visible.length === 1 ? " movimiento" : " movimientos");
+  if (countEl)
+    countEl.textContent =
+      visible.length + (visible.length === 1 ? " movimiento" : " movimientos");
 }
 
 function renderTagChips() {
@@ -313,6 +314,37 @@ searchInput.addEventListener("input", () => {
   render();
 });
 
-/* ---------- Init ---------- */
+/* ---------- Init códice ---------- */
 renderTagChips();
 render();
+
+/* ============================================================
+   Navegación entre vistas (pestañas) — pensado para TV/control remoto
+   ============================================================ */
+const VIEWS = ["codice", "bachata", "sim"];
+const tabButtons = [...document.querySelectorAll(".tab")];
+
+function showView(name) {
+  if (!VIEWS.includes(name)) name = "codice";
+  VIEWS.forEach((v) => {
+    const sec = document.getElementById("view-" + v);
+    if (sec) sec.hidden = v !== name;
+  });
+  tabButtons.forEach((b) => b.classList.toggle("active", b.dataset.view === name));
+  if (location.hash !== "#" + name) history.replaceState(null, "", "#" + name);
+  // Avisar a cada módulo que su vista quedó activa (lazy render / arranque).
+  window.dispatchEvent(new CustomEvent("view:show", { detail: name }));
+}
+
+tabButtons.forEach((b) => b.addEventListener("click", () => showView(b.dataset.view)));
+
+document.addEventListener("keydown", (e) => {
+  // No robar teclas mientras se escribe en un input.
+  if (e.target.matches("input, textarea")) return;
+  const idx = VIEWS.indexOf(location.hash.slice(1) || "codice");
+  if (e.key === "ArrowRight") showView(VIEWS[(idx + 1) % VIEWS.length]);
+  else if (e.key === "ArrowLeft") showView(VIEWS[(idx - 1 + VIEWS.length) % VIEWS.length]);
+  else if (["1", "2", "3"].includes(e.key)) showView(VIEWS[+e.key - 1]);
+});
+
+showView((location.hash.slice(1)) || "codice");

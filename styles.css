@@ -309,3 +309,210 @@ details.card-detail[open] summary::before { content: "▾ "; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .orb { opacity: 0.35; }
 }
+
+/* ============================================================
+   v2 — Navegación por pestañas + vistas + Bachata + Simulador (TV)
+   ============================================================ */
+
+/* Escalado para TV: la tipografía crece con el ancho de pantalla */
+@media (min-width: 1500px) { :root { font-size: 18px; } }
+@media (min-width: 1900px) { :root { font-size: 20px; } }
+
+/* ---------- Topnav / tabs ---------- */
+.topnav {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 20px;
+  padding: 10px clamp(14px, 3vw, 44px);
+  background: linear-gradient(180deg, rgba(11,13,24,0.95), rgba(11,13,24,0.78));
+  backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+}
+.brand {
+  font-family: var(--font-display); letter-spacing: 1.5px;
+  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+  background: linear-gradient(92deg, var(--accent), var(--accent-3));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  display: flex; align-items: center; gap: 8px;
+}
+.brand-orb { animation: bob 3.5s ease-in-out infinite; -webkit-text-fill-color: initial; }
+.tabs { display: flex; gap: 8px; margin: 0 auto 0 10px; }
+.tab {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: rgba(20,24,48,0.6);
+  color: var(--muted); font-family: var(--font-body); font-weight: 700;
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem); transition: all .15s;
+}
+.tab:hover { color: var(--text); transform: translateY(-1px); }
+.tab.active {
+  background: linear-gradient(92deg, var(--accent), var(--accent-3));
+  color: #fff; border-color: transparent; box-shadow: 0 6px 20px -6px var(--accent);
+}
+.nav-hint { color: var(--muted); font-size: 0.8rem; opacity: 0.7; letter-spacing: 1px; }
+
+/* ---------- Vistas ---------- */
+main { padding: 0; }
+.view { padding: clamp(16px, 2.4vw, 34px) clamp(14px, 3vw, 48px); }
+#view-codice .grid { max-width: none; }
+.view-head { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+.view-title { font-family: var(--font-display); letter-spacing: 1px; margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.6rem); }
+.view-title b { color: var(--accent); }
+.tools { display: flex; gap: 12px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+
+/* Códice más compacto para TV */
+#view-codice .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+#view-codice .card-media { aspect-ratio: 16 / 9; }
+#view-codice .card-body { padding: 13px; gap: 8px; }
+#view-codice .card-concept { font-size: 0.82rem; -webkit-line-clamp: 3; }
+
+/* ============================================================
+   BACHATA — tablero / cheat sheet
+   ============================================================ */
+.board-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.board-title { font-family: var(--font-display); letter-spacing: 1px; margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); }
+.board-title b { background: linear-gradient(92deg, var(--good), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.go-sim {
+  border: 1px solid var(--good); background: color-mix(in srgb, var(--good) 14%, transparent);
+  color: var(--good); border-radius: 999px; padding: 10px 18px; cursor: pointer;
+  font-family: var(--font-body); font-weight: 700; font-size: clamp(0.9rem, 1.5vw, 1.05rem); transition: all .15s;
+}
+.go-sim:hover { background: var(--good); color: #04241a; transform: translateY(-1px); }
+
+.board-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px; align-items: start;
+}
+.panel {
+  --pa: var(--accent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pa) 8%, var(--card)), var(--card));
+  border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.panel.span-2 { grid-column: span 2; }
+.accent-guira { --pa: #46d19e; } .accent-bongo { --pa: #ff7b3d; } .accent-bajo { --pa: #4ea8ff; }
+.accent-voz { --pa: #ffd24a; } .accent-guitarra { --pa: #b06bff; } .accent-full { --pa: #ff5d8f; }
+.panel-title {
+  margin: 0; padding: 12px 16px; font-size: clamp(1rem, 1.9vw, 1.3rem);
+  display: flex; align-items: center; gap: 9px; color: #fff;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--pa) 16%, transparent);
+}
+.panel-title span { font-size: 1.2em; }
+.panel-body { padding: 14px 16px; font-size: clamp(0.85rem, 1.4vw, 1rem); }
+.panel-foot { margin: 10px 0 0; font-size: 0.8rem; color: var(--muted); }
+.panel-foot b { color: var(--pa); }
+
+/* Patrones por instrumento */
+.patterns { display: flex; flex-direction: column; gap: 12px; }
+.pat-row { display: grid; grid-template-columns: 130px 1fr; gap: 4px 14px; align-items: center; }
+.pat-name { font-weight: 700; color: var(--c); font-size: clamp(0.9rem, 1.5vw, 1.05rem); }
+.pat-note { grid-column: 2; color: var(--muted); font-size: 0.78rem; }
+.beatstrip { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.beatstrip.has-sub { grid-template-columns: repeat(16, 1fr); }
+.bs-cell {
+  display: grid; place-items: center; aspect-ratio: 1; border-radius: 8px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  color: var(--muted); font-size: clamp(0.7rem, 1.2vw, 0.9rem); font-weight: 700;
+}
+.bs-cell.sub { font-size: 0.7em; opacity: 0.75; }
+.bs-cell.on { background: var(--c); color: #0a0a0a; border-color: transparent; box-shadow: 0 0 12px -3px var(--c); }
+
+/* Conteos */
+.counts { display: flex; flex-direction: column; gap: 8px; }
+.count-row { display: flex; align-items: center; gap: 12px; }
+.count-pat { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--pa); font-weight: 700; min-width: 8em; text-align: center; letter-spacing: 1px; }
+.count-meta { display: flex; flex-direction: column; }
+.count-meta span { color: var(--muted); font-size: 0.78rem; }
+
+/* Figuras */
+.figures { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fig { display: flex; align-items: center; gap: 10px; }
+.fig-sym { font-size: 1.8rem; width: 1.4em; text-align: center; color: var(--pa); }
+.fig div { display: flex; flex-direction: column; }
+.fig span { color: var(--muted); font-size: 0.78rem; }
+
+/* Pasos */
+.steps { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 18px; }
+.steps li { padding: 5px 0 5px 18px; position: relative; break-inside: avoid; font-size: 0.9rem; }
+.steps li::before { content: "▸"; position: absolute; left: 0; color: var(--pa); }
+
+/* Tipos/orígenes + defs */
+.sub-block { margin-bottom: 12px; }
+.sub-label { display: block; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.chip { display: inline-block; margin: 0 6px 6px 0; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--pa) 14%, transparent); border: 1px solid color-mix(in srgb, var(--pa) 40%, transparent); color: #fff; font-size: 0.85rem; }
+.def { margin-bottom: 10px; }
+.def b { color: var(--pa); display: block; }
+.def span { color: #cfd3ee; font-size: 0.86rem; }
+
+/* ============================================================
+   SIMULADOR
+   ============================================================ */
+.sim { max-width: 1500px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.sim-head { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.sim-title { font-family: var(--font-display); letter-spacing: 1px; margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.6rem); }
+.sim-title b { color: var(--accent); }
+.sim-transport { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-left: auto; }
+.play-btn {
+  border: none; border-radius: 999px; padding: 12px 26px; cursor: pointer;
+  font-family: var(--font-body); font-weight: 700; font-size: clamp(1rem, 1.8vw, 1.2rem);
+  background: var(--good); color: #04241a; display: flex; align-items: center; gap: 8px; transition: transform .08s;
+}
+.play-btn.playing { background: var(--accent); color: #1a1200; }
+.play-btn:active { transform: scale(0.95); }
+.sim-bpm { display: flex; align-items: center; gap: 10px; }
+#bpm-range { width: clamp(120px, 16vw, 220px); accent-color: var(--accent); }
+.bpm-read { display: flex; align-items: baseline; gap: 5px; }
+#bpm-num { width: 3.6em; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 6px; font-family: var(--font-body); font-weight: 700; font-size: 1.1rem; text-align: center; -moz-appearance: textfield; }
+#bpm-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+.bpm-read span { color: var(--muted); font-size: 0.72rem; letter-spacing: 1px; }
+.mini-btn { border: 1px solid var(--border); background: rgba(20,24,48,0.7); color: var(--text); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-family: var(--font-body); font-weight: 600; font-size: 0.85rem; transition: all .15s; }
+.mini-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.mini-btn.ghost { color: var(--muted); }
+.sim-presets { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Secuenciador */
+.seq { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); }
+.ruler, .track { display: grid; grid-template-columns: clamp(90px, 12vw, 150px) 1fr; align-items: center; gap: 12px; }
+.rl-cells, .track-cells { display: grid; grid-template-columns: repeat(16, 1fr); gap: clamp(3px, 0.5vw, 6px); }
+.ruler { margin-bottom: 12px; }
+.rl-cell { text-align: center; font-weight: 700; color: var(--muted); font-size: clamp(0.75rem, 1.3vw, 1rem); padding: 4px 0; border-radius: 6px; }
+.rl-cell.down { color: var(--text); }
+.rl-cell.sub { opacity: 0.5; font-size: 0.8em; }
+.rl-cell.head { background: rgba(255,255,255,0.12); }
+
+.sim-tracks { display: flex; flex-direction: column; gap: 10px; }
+.track { --c: var(--accent); }
+.track.muted { opacity: 0.45; }
+.track-name { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--c); font-size: clamp(0.85rem, 1.4vw, 1.05rem); }
+.track-name span { flex: 1; }
+.t-mute, .t-del { background: none; border: none; cursor: pointer; font-size: 0.95rem; opacity: 0.7; }
+.t-del { color: var(--muted); }
+.t-mute:hover, .t-del:hover { opacity: 1; }
+.step {
+  aspect-ratio: 1; min-height: clamp(26px, 3.4vw, 46px); border-radius: 9px; cursor: pointer;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border); transition: transform .06s, background .1s;
+}
+.step.down { background: rgba(255,255,255,0.07); }
+.step:hover { transform: scale(1.06); border-color: var(--c); }
+.step.on { background: var(--c); border-color: transparent; box-shadow: 0 0 14px -3px var(--c); }
+.step.head { outline: 3px solid #fff; outline-offset: -2px; }
+.step.on.head { box-shadow: 0 0 20px 0 var(--c); }
+
+.sim-empty { text-align: center; color: var(--muted); padding: 26px 0 6px; font-size: 1.05rem; }
+
+/* Paleta */
+.palette { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.palette-label { color: var(--muted); font-weight: 600; }
+.palette-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.pal-chip {
+  --c: var(--accent); border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) 12%, transparent);
+  color: #fff; border-radius: 999px; padding: 10px 18px; cursor: pointer;
+  font-family: var(--font-body); font-weight: 700; font-size: clamp(0.85rem, 1.5vw, 1.05rem); transition: all .15s;
+}
+.pal-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 18px -6px var(--c); }
+.pal-chip.added { background: var(--c); color: #0a0a0a; }
+
+@media (max-width: 700px) {
+  .panel.span-2 { grid-column: span 1; }
+  .tab span { display: none; }
+  .nav-hint { display: none; }
+}
