@@ -53,8 +53,16 @@
     )
     .join("");
 
-  // --- Pasos básicos (chips grandes) ---
-  const steps = B.steps.map((s) => `<span class="step-chip">${s}</span>`).join("");
+  // --- Pasos básicos (agrupados, chips grandes) ---
+  const steps = B.steps
+    .map(
+      (grp) => `
+      <div class="step-group">
+        <span class="step-group-label">${grp.group}</span>
+        <div class="step-chips">${grp.items.map((s) => `<span class="step-chip">${s}</span>`).join("")}</div>
+      </div>`
+    )
+    .join("");
 
   // --- Tipos / orígenes ---
   const chips = (arr) => arr.map((x) => `<span class="chip">${x}</span>`).join("");
@@ -76,7 +84,7 @@
       ${panel("span-2 accent-guira", "Patrones por instrumento", "🥁", `<div class="patterns">${patterns}</div>
         <p class="panel-foot">Sobre el conteo de 8 tiempos. Estos son los que combina el simulador.</p>`)}
       ${panel("accent-voz", "Conteos", "🔢", `<div class="counts">${counts}</div>`)}
-      ${panel("span-2 accent-bajo", "Pasos básicos · mi guía", "👟", `<div class="step-chips">${steps}</div>`)}
+      ${panel("span-2 accent-bajo", "Pasos básicos · mi guía", "👟", `<div class="step-groups">${steps}</div>`)}
       ${panel("accent-bongo", "Partes de la bachata", "🎼", defList(B.parts))}
       ${panel("accent-bongo", "Figuras rítmicas", "🎵", `<div class="figures">${figures}</div>
         <p class="panel-foot">La percusión no se alarga: <b>seco</b> o <b>redoble</b>.</p>`)}

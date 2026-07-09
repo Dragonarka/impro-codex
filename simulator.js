@@ -10,92 +10,13 @@
   const STEPS = 16; // 8 tiempos × 2 (la "y")
   const beatOf = (s) => s / 2 + 1; // paso -> nº de tiempo (solo pares)
 
-  /* ---------- Definición de instrumentos ---------- */
-  // preset: pasos activos (0..15). make(): sintetiza el sonido con Web Audio.
+  /* ---------- Definición de instrumentos (samples reales) ---------- */
+  // preset: pasos activos (0..15). Los sonidos se cargan desde assets/audio/.
   const INSTRUMENTS = [
-    {
-      // Güira: raspado metálico (ruido filtrado en agudos, corto y seco).
-      id: "guira", name: "Güira", accent: "#46d19e", preset: [0, 2, 4, 6, 8, 10, 12, 14],
-      make(ctx, t, out, accent) {
-        const src = ctx.createBufferSource(); src.buffer = noiseBuffer(ctx);
-        const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 4500;
-        const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 8500; bp.Q.value = 1.1;
-        const g = ctx.createGain();
-        const v = accent ? 0.42 : 0.24;
-        g.gain.setValueAtTime(v, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + (accent ? 0.06 : 0.035));
-        src.connect(hp).connect(bp).connect(g).connect(out); src.start(t); src.stop(t + 0.08);
-      },
-    },
-    {
-      // Bongó: membrana afinada con caída de tono + transitorio de "slap".
-      id: "bongo", name: "Bongó", accent: "#ff7b3d", preset: [4, 6, 12, 14],
-      make(ctx, t, out, accent) {
-        const f = accent ? 430 : 300;
-        const o = ctx.createOscillator(); o.type = "sine";
-        o.frequency.setValueAtTime(f * 1.7, t);
-        o.frequency.exponentialRampToValueAtTime(f, t + 0.045);
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.7, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
-        o.connect(g).connect(out); o.start(t); o.stop(t + 0.15);
-        // slap
-        const n = ctx.createBufferSource(); n.buffer = noiseBuffer(ctx);
-        const nb = ctx.createBiquadFilter(); nb.type = "bandpass"; nb.frequency.value = 1900; nb.Q.value = 1.2;
-        const ng = ctx.createGain(); ng.gain.setValueAtTime(0.28, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-        n.connect(nb).connect(ng).connect(out); n.start(t); n.stop(t + 0.04);
-      },
-    },
-    {
-      // Bajo de guitarra: cuerda pulsada (saw+triangle por lowpass con envolvente de pluck).
-      id: "bajo", name: "Bajo", accent: "#4ea8ff", preset: [0, 4, 8, 12],
-      make(ctx, t, out) {
-        const f = 98; // Sol grave, redondo
-        const o1 = ctx.createOscillator(); o1.type = "sawtooth"; o1.frequency.value = f;
-        const o2 = ctx.createOscillator(); o2.type = "triangle"; o2.frequency.value = f;
-        o1.frequency.setValueAtTime(f * 1.03, t); o1.frequency.exponentialRampToValueAtTime(f, t + 0.05);
-        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 7;
-        lp.frequency.setValueAtTime(1400, t);
-        lp.frequency.exponentialRampToValueAtTime(160, t + 0.28);
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.linearRampToValueAtTime(0.9, t + 0.008);   // ataque de púa
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
-        o1.connect(lp); o2.connect(lp); lp.connect(g).connect(out);
-        o1.start(t); o2.start(t); o1.stop(t + 0.42); o2.stop(t + 0.42);
-      },
-    },
-    {
-      // Guitarra (requinto): rasgueo de 3 cuerdas escalonado, pulsado y brillante.
-      id: "guitarra", name: "Guitarra", accent: "#b06bff", preset: [2, 6, 10, 14],
-      make(ctx, t, out) {
-        const freqs = [587, 740, 880];
-        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 2;
-        lp.frequency.setValueAtTime(3600, t); lp.frequency.exponentialRampToValueAtTime(1100, t + 0.2);
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.linearRampToValueAtTime(0.3, t + 0.006);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
-        freqs.forEach((fr, i) => {
-          const o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = fr;
-          const og = ctx.createGain(); og.gain.value = i === 0 ? 0.55 : 0.3;
-          o.connect(og).connect(lp); o.start(t + i * 0.007); o.stop(t + 0.26);
-        });
-        lp.connect(g).connect(out);
-      },
-    },
-    {
-      // Full: click de referencia (bloque de madera), acento en el 1.
-      id: "full", name: "Full (click)", accent: "#ff5d8f", preset: Array.from({ length: 16 }, (_, i) => i),
-      make(ctx, t, out, accent) {
-        const o = ctx.createOscillator(); o.type = "square";
-        const g = ctx.createGain();
-        o.frequency.value = accent ? 1500 : 1000;
-        g.gain.setValueAtTime(accent ? 0.28 : 0.14, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-        o.connect(g).connect(out); o.start(t); o.stop(t + 0.04);
-      },
-    },
+    { id: "guira",    name: "Güira",    accent: "#46d19e", preset: [0, 2, 4, 6, 8, 10, 12, 14] },
+    { id: "bongo",    name: "Bongó",    accent: "#ff7b3d", preset: [4, 6, 12, 14] },
+    { id: "bajo",     name: "Bajo",     accent: "#4ea8ff", preset: [0, 4, 8, 12] },
+    { id: "guitarra", name: "Guitarra", accent: "#b06bff", preset: [2, 6, 10, 14] },
   ];
   const byId = Object.fromEntries(INSTRUMENTS.map((i) => [i.id, i]));
 
@@ -109,40 +30,110 @@
     derecho: { bajo: [0, 4, 8, 12],    guira: ALL16,         bongo: [4, 6, 12, 14], guitarra: [2, 6, 10, 14] },
   };
 
-  let _noise;
-  function noiseBuffer(ctx) {
-    if (_noise) return _noise;
-    _noise = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate);
-    const d = _noise.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    return _noise;
-  }
+  /* ---------- Samples reales (assets/audio) ---------- */
+  const FILES = {
+    guira_hit1:   "assets/audio/guira_hit1.wav",
+    guira_hit2:   "assets/audio/guira_hit2.wav",
+    guira_accent: "assets/audio/guira_accent.wav",
+    bongo_hi:     "assets/audio/bongo_hi.wav",
+    bongo_lo:     "assets/audio/bongo_lo.wav",
+    bajo:         "assets/audio/bajo_e2.mp3",
+    guitarra_a3:  "assets/audio/guitarra_a3.mp3",
+    guitarra_e4:  "assets/audio/guitarra_e4.mp3",
+  };
+  const buffers = {};
+  let loaded = false, loading = false;
 
   /* ---------- Estado ---------- */
-  let ctx = null, master = null;
+  let ctx = null, master = null, reverb = null;
   let bpm = 130, playing = false, timer = null, nextTime = 0, step = 0;
   const tracks = []; // { id, pattern:Set, muted }
 
-  /* ---------- Motor de audio (lookahead scheduler) ---------- */
+  /* ---------- Motor de audio (samples + reverb) ---------- */
+  function makeImpulse(seconds, decay) {
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+    return buf;
+  }
+
   function ensureCtx() {
     if (ctx) return;
     ctx = new (window.AudioContext || window.webkitAudioContext)();
-    master = ctx.createGain(); master.gain.value = 0.9;
-    const comp = ctx.createDynamicsCompressor(); // pega la mezcla y evita saturar
-    comp.threshold.value = -14; comp.ratio.value = 3; comp.attack.value = 0.003; comp.release.value = 0.2;
-    master.connect(comp).connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = 0.95;
+    const comp = ctx.createDynamicsCompressor(); // pega la mezcla
+    comp.threshold.value = -12; comp.ratio.value = 3; comp.attack.value = 0.003; comp.release.value = 0.25;
+    master.connect(comp); comp.connect(ctx.destination);
+    reverb = ctx.createConvolver(); reverb.buffer = makeImpulse(1.4, 2.4);
+    const rGain = ctx.createGain(); rGain.gain.value = 0.85;
+    reverb.connect(rGain); rGain.connect(comp); // sala pequeña, da aire
   }
+
+  async function loadSamples() {
+    if (loaded || loading) return;
+    loading = true; setLoadingUI(true); ensureCtx();
+    await Promise.all(
+      Object.entries(FILES).map(async ([k, url]) => {
+        try {
+          const ab = await (await fetch(url)).arrayBuffer();
+          buffers[k] = await ctx.decodeAudioData(ab);
+        } catch (e) { console.warn("No se pudo cargar", url, e); }
+      })
+    );
+    loaded = true; loading = false; setLoadingUI(false);
+  }
+
+  function setLoadingUI(on) {
+    if (!playBtn) return;
+    playBtn.disabled = on;
+    if (on) playBtn.innerHTML = "⏳ <span>Cargando…</span>";
+    else if (!playing) playBtn.innerHTML = "▶ <span>Play</span>";
+  }
+
+  // Reproduce un sample con ganancia, tono (rate) y envío a reverb.
+  function playSample(name, time, gain, rate, send) {
+    const buf = buffers[name]; if (!buf) return;
+    const src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate || 1;
+    const g = ctx.createGain(); g.gain.value = gain == null ? 1 : gain;
+    src.connect(g); g.connect(master);
+    if (send > 0 && reverb) { const s = ctx.createGain(); s.gain.value = send; g.connect(s); s.connect(reverb); }
+    src.start(time);
+  }
+
+  let rrIdx = 0;
+  const rr = (arr) => arr[rrIdx++ % arr.length];
+
+  // Traduce cada instrumento a samples reales según el paso/acento.
+  function triggerVoice(id, time, s, accent) {
+    const beat = s / 2 + 1; // nº de tiempo en los pasos "fuertes"
+    if (id === "guira") {
+      if (accent) playSample("guira_accent", time, 0.5, 1, 0.08);
+      else playSample(rr(["guira_hit1", "guira_hit2"]), time, 0.36, 1, 0.06);
+    } else if (id === "bongo") {
+      // martillo: hembra (agudo) en tiempos pares, macho (grave) en impares
+      const hi = beat % 2 === 0;
+      playSample(hi ? "bongo_hi" : "bongo_lo", time, accent ? 0.85 : 0.7, 1, 0.13);
+    } else if (id === "bajo") {
+      const alt = beat === 3 || beat === 7; // leve movimiento
+      playSample("bajo", time, 0.9, alt ? 1.06 : 1.0, 0.04);
+    } else if (id === "guitarra") {
+      playSample("guitarra_a3", time, 0.5, 1, 0.18);
+      playSample("guitarra_e4", time + 0.012, 0.4, 1, 0.18);
+    }
+  }
+
   function stepDur() { return 60 / bpm / 2; }
 
   function scheduler() {
     while (nextTime < ctx.currentTime + 0.12) {
       const s = step;
       const isDown = s % 2 === 0;
-      const isOne = s === 0;
       tracks.forEach((tr) => {
         if (tr.muted || !tr.pattern.has(s)) return;
-        const accent = tr.id === "full" ? isOne : isDown;
-        byId[tr.id].make(ctx, nextTime, master, accent);
+        triggerVoice(tr.id, nextTime, s, isDown);
       });
       const at = nextTime;
       setTimeout(() => paintHead(s), Math.max(0, (at - ctx.currentTime) * 1000));
@@ -151,10 +142,11 @@
     }
   }
 
-  function play() {
+  async function play() {
     ensureCtx();
-    if (ctx.state === "suspended") ctx.resume();
-    playing = true; step = 0; nextTime = ctx.currentTime + 0.06;
+    if (!loaded) await loadSamples();
+    if (ctx.state === "suspended") await ctx.resume();
+    playing = true; step = 0; nextTime = ctx.currentTime + 0.1;
     timer = setInterval(scheduler, 25);
     playBtn.classList.add("playing");
     playBtn.innerHTML = "⏹ <span>Stop</span>";
@@ -313,8 +305,11 @@
     b.addEventListener("click", () => applySection(b.dataset.sec))
   );
 
-  // Al salir de la vista, frenar el audio.
-  window.addEventListener("view:show", (e) => { if (e.detail !== "sim" && playing) stop(); });
+  // Al entrar a la vista precargamos los samples; al salir, frenamos el audio.
+  window.addEventListener("view:show", (e) => {
+    if (e.detail === "sim") loadSamples();
+    else if (playing) stop();
+  });
 
   renderPalette();
   renderTracks();

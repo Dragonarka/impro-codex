@@ -430,7 +430,14 @@ main { padding: 0; }
 .fig div { display: flex; flex-direction: column; }
 .fig span { color: var(--muted); font-size: 0.78rem; }
 
-/* Pasos — chips grandes (guía base) */
+/* Pasos — agrupados en columnas, chips grandes (guía base) */
+.step-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px 22px; }
+.step-group-label {
+  display: block; margin-bottom: 10px; padding-bottom: 6px;
+  color: var(--pa); font-weight: 700; font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  text-transform: uppercase; letter-spacing: 1px;
+  border-bottom: 2px solid color-mix(in srgb, var(--pa) 40%, transparent);
+}
 .step-chips { display: flex; flex-wrap: wrap; gap: 10px; }
 .step-chip {
   padding: 11px 18px; border-radius: 12px;

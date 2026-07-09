@@ -34,12 +34,18 @@ const BACHATA = {
     { sym: "♪", name: "Corchea", val: "½ tiempo · bongó" },
   ],
 
-  // Pasos básicos — mi guía de elementos disponibles
+  // Pasos básicos — mi guía de elementos disponibles, agrupada por tipo
   steps: [
-    "Básico normal estacionado", "Caballo", "Cuadro", "Cruzando por detrás", "Chachachá",
-    "Box step", "Línea bachata", "Twist", "Péndulo",
-    "Side cross (Madrid) / Diagonal", "Lateral (el de Carlitos)", "Rebote / el de saltico",
-    "Bolero en el puesto", "Básico en V", "Media luna", "Ajuste (paso a paso)",
+    { group: "En el puesto", items: [
+      "Básico normal estacionado", "Bolero en el puesto", "Ajuste (paso a paso)",
+    ] },
+    { group: "Con rebote / cadencia", items: [
+      "Rebote / el de saltico", "Caballo", "Chachachá", "Twist", "Péndulo",
+    ] },
+    { group: "Desplazamientos", items: [
+      "Box step", "Cuadro", "Línea bachata", "Lateral (el de Carlitos)",
+      "Side cross (Madrid) / Diagonal", "Media luna", "Básico en V", "Cruzando por detrás",
+    ] },
   ],
 
   // Partes / estructura de una canción de bachata (clave para el ejercicio)
