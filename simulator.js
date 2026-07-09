@@ -14,83 +14,100 @@
   // preset: pasos activos (0..15). make(): sintetiza el sonido con Web Audio.
   const INSTRUMENTS = [
     {
+      // Güira: raspado metálico (ruido filtrado en agudos, corto y seco).
       id: "guira", name: "Güira", accent: "#46d19e", preset: [0, 2, 4, 6, 8, 10, 12, 14],
       make(ctx, t, out, accent) {
-        const buf = noiseBuffer(ctx);
-        const src = ctx.createBufferSource(); src.buffer = buf;
-        const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 6000; bp.Q.value = 0.8;
+        const src = ctx.createBufferSource(); src.buffer = noiseBuffer(ctx);
+        const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 4500;
+        const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 8500; bp.Q.value = 1.1;
         const g = ctx.createGain();
-        const v = accent ? 0.5 : 0.32;
+        const v = accent ? 0.42 : 0.24;
         g.gain.setValueAtTime(v, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
-        src.connect(bp).connect(g).connect(out); src.start(t); src.stop(t + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + (accent ? 0.06 : 0.035));
+        src.connect(hp).connect(bp).connect(g).connect(out); src.start(t); src.stop(t + 0.08);
       },
     },
     {
+      // Bongó: membrana afinada con caída de tono + transitorio de "slap".
       id: "bongo", name: "Bongó", accent: "#ff7b3d", preset: [4, 6, 12, 14],
       make(ctx, t, out, accent) {
-        const o = ctx.createOscillator(); o.type = "triangle";
+        const f = accent ? 430 : 300;
+        const o = ctx.createOscillator(); o.type = "sine";
+        o.frequency.setValueAtTime(f * 1.7, t);
+        o.frequency.exponentialRampToValueAtTime(f, t + 0.045);
         const g = ctx.createGain();
-        const f = accent ? 380 : 300;
-        o.frequency.setValueAtTime(f, t);
-        o.frequency.exponentialRampToValueAtTime(f * 0.55, t + 0.08);
-        g.gain.setValueAtTime(0.6, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
-        o.connect(g).connect(out); o.start(t); o.stop(t + 0.12);
+        g.gain.setValueAtTime(0.7, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+        o.connect(g).connect(out); o.start(t); o.stop(t + 0.15);
+        // slap
+        const n = ctx.createBufferSource(); n.buffer = noiseBuffer(ctx);
+        const nb = ctx.createBiquadFilter(); nb.type = "bandpass"; nb.frequency.value = 1900; nb.Q.value = 1.2;
+        const ng = ctx.createGain(); ng.gain.setValueAtTime(0.28, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+        n.connect(nb).connect(ng).connect(out); n.start(t); n.stop(t + 0.04);
       },
     },
     {
+      // Bajo de guitarra: cuerda pulsada (saw+triangle por lowpass con envolvente de pluck).
       id: "bajo", name: "Bajo", accent: "#4ea8ff", preset: [0, 4, 8, 12],
       make(ctx, t, out) {
-        const o = ctx.createOscillator(); o.type = "sine";
+        const f = 98; // Sol grave, redondo
+        const o1 = ctx.createOscillator(); o1.type = "sawtooth"; o1.frequency.value = f;
+        const o2 = ctx.createOscillator(); o2.type = "triangle"; o2.frequency.value = f;
+        o1.frequency.setValueAtTime(f * 1.03, t); o1.frequency.exponentialRampToValueAtTime(f, t + 0.05);
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 7;
+        lp.frequency.setValueAtTime(1400, t);
+        lp.frequency.exponentialRampToValueAtTime(160, t + 0.28);
         const g = ctx.createGain();
-        o.frequency.setValueAtTime(90, t);
-        o.frequency.exponentialRampToValueAtTime(70, t + 0.15);
-        g.gain.setValueAtTime(0.7, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-        o.connect(g).connect(out); o.start(t); o.stop(t + 0.24);
-      },
-    },
-    {
-      id: "voz", name: "Voz", accent: "#ffd24a", preset: [0, 8],
-      make(ctx, t, out) {
-        const o = ctx.createOscillator(); o.type = "triangle";
-        const o2 = ctx.createOscillator(); o2.type = "sine"; o2.detune.value = 7;
-        const g = ctx.createGain();
-        o.frequency.value = 330; o2.frequency.value = 330;
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.linearRampToValueAtTime(0.32, t + 0.04);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-        o.connect(g); o2.connect(g); g.connect(out);
-        o.start(t); o2.start(t); o.stop(t + 0.3); o2.stop(t + 0.3);
+        g.gain.linearRampToValueAtTime(0.9, t + 0.008);   // ataque de púa
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+        o1.connect(lp); o2.connect(lp); lp.connect(g).connect(out);
+        o1.start(t); o2.start(t); o1.stop(t + 0.42); o2.stop(t + 0.42);
       },
     },
     {
+      // Guitarra (requinto): rasgueo de 3 cuerdas escalonado, pulsado y brillante.
       id: "guitarra", name: "Guitarra", accent: "#b06bff", preset: [2, 6, 10, 14],
       make(ctx, t, out) {
-        const o = ctx.createOscillator(); o.type = "triangle";
-        const o2 = ctx.createOscillator(); o2.type = "triangle"; o2.detune.value = -12;
+        const freqs = [587, 740, 880];
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 2;
+        lp.frequency.setValueAtTime(3600, t); lp.frequency.exponentialRampToValueAtTime(1100, t + 0.2);
         const g = ctx.createGain();
-        o.frequency.value = 620; o2.frequency.value = 930;
-        g.gain.setValueAtTime(0.35, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
-        o.connect(g); o2.connect(g); g.connect(out);
-        o.start(t); o2.start(t); o.stop(t + 0.15); o2.stop(t + 0.15);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(0.3, t + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+        freqs.forEach((fr, i) => {
+          const o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = fr;
+          const og = ctx.createGain(); og.gain.value = i === 0 ? 0.55 : 0.3;
+          o.connect(og).connect(lp); o.start(t + i * 0.007); o.stop(t + 0.26);
+        });
+        lp.connect(g).connect(out);
       },
     },
     {
+      // Full: click de referencia (bloque de madera), acento en el 1.
       id: "full", name: "Full (click)", accent: "#ff5d8f", preset: Array.from({ length: 16 }, (_, i) => i),
       make(ctx, t, out, accent) {
         const o = ctx.createOscillator(); o.type = "square";
         const g = ctx.createGain();
         o.frequency.value = accent ? 1500 : 1000;
-        g.gain.setValueAtTime(accent ? 0.3 : 0.16, t);
+        g.gain.setValueAtTime(accent ? 0.28 : 0.14, t);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
         o.connect(g).connect(out); o.start(t); o.stop(t + 0.04);
       },
     },
   ];
   const byId = Object.fromEntries(INSTRUMENTS.map((i) => [i.id, i]));
+
+  const ALL16 = Array.from({ length: 16 }, (_, i) => i);
+  const DOWN = [0, 2, 4, 6, 8, 10, 12, 14];
+  // Secciones de una canción de bachata — cada una arma su combinación de instrumentos.
+  const SECTIONS = {
+    intro:   { bajo: [0, 8],           guira: [0, 4, 8, 12] },
+    verso:   { bajo: [0, 4, 8, 12],    guira: DOWN,          bongo: [4, 6, 12, 14] },
+    majao:   { bajo: [0, 4, 8, 12],    guira: ALL16,         bongo: DOWN,           guitarra: [2, 6, 10, 14] },
+    derecho: { bajo: [0, 4, 8, 12],    guira: ALL16,         bongo: [4, 6, 12, 14], guitarra: [2, 6, 10, 14] },
+  };
 
   let _noise;
   function noiseBuffer(ctx) {
@@ -110,7 +127,10 @@
   function ensureCtx() {
     if (ctx) return;
     ctx = new (window.AudioContext || window.webkitAudioContext)();
-    master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = 0.9;
+    const comp = ctx.createDynamicsCompressor(); // pega la mezcla y evita saturar
+    comp.threshold.value = -14; comp.ratio.value = 3; comp.attack.value = 0.003; comp.release.value = 0.2;
+    master.connect(comp).connect(ctx.destination);
   }
   function stepDur() { return 60 / bpm / 2; }
 
@@ -163,9 +183,12 @@
             <button class="mini-btn" id="sim-tap">Tap</button>
           </div>
           <div class="sim-presets">
-            <button class="mini-btn" data-preset="full">Bachata completa</button>
-            <button class="mini-btn" data-preset="perc">Solo percusión</button>
-            <button class="mini-btn ghost" data-preset="clear">Vaciar</button>
+            <span class="sec-label">Sección:</span>
+            <button class="mini-btn" data-sec="intro">Intro</button>
+            <button class="mini-btn" data-sec="verso">Verso</button>
+            <button class="mini-btn" data-sec="majao">Majao</button>
+            <button class="mini-btn" data-sec="derecho">Derecho</button>
+            <button class="mini-btn ghost" data-sec="clear">Vaciar</button>
           </div>
         </div>
       </div>
@@ -274,14 +297,20 @@
     }
   });
 
-  document.querySelectorAll(".sim-presets [data-preset]").forEach((b) =>
-    b.addEventListener("click", () => {
-      const p = b.dataset.preset;
-      tracks.length = 0;
-      if (p === "full") ["bajo", "guira", "bongo", "guitarra", "voz"].forEach(addInstrument);
-      else if (p === "perc") ["guira", "bongo"].forEach(addInstrument);
-      renderTracks(); renderPalette();
-    })
+  function applySection(name) {
+    tracks.length = 0;
+    if (name !== "clear") {
+      Object.entries(SECTIONS[name]).forEach(([id, steps]) =>
+        tracks.push({ id, pattern: new Set(steps), muted: false })
+      );
+    }
+    renderTracks(); renderPalette();
+    document.querySelectorAll(".sim-presets [data-sec]").forEach((b) =>
+      b.classList.toggle("active-sec", b.dataset.sec === name)
+    );
+  }
+  document.querySelectorAll(".sim-presets [data-sec]").forEach((b) =>
+    b.addEventListener("click", () => applySection(b.dataset.sec))
   );
 
   // Al salir de la vista, frenar el audio.

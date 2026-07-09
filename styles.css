@@ -430,10 +430,16 @@ main { padding: 0; }
 .fig div { display: flex; flex-direction: column; }
 .fig span { color: var(--muted); font-size: 0.78rem; }
 
-/* Pasos */
-.steps { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 18px; }
-.steps li { padding: 5px 0 5px 18px; position: relative; break-inside: avoid; font-size: 0.9rem; }
-.steps li::before { content: "▸"; position: absolute; left: 0; color: var(--pa); }
+/* Pasos — chips grandes (guía base) */
+.step-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.step-chip {
+  padding: 11px 18px; border-radius: 12px;
+  background: color-mix(in srgb, var(--pa) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pa) 42%, transparent);
+  color: #fff; font-weight: 600; font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  transition: transform .12s, background .12s;
+}
+.step-chip:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--pa) 28%, transparent); }
 
 /* Tipos/orígenes + defs */
 .sub-block { margin-bottom: 12px; }
@@ -467,7 +473,9 @@ main { padding: 0; }
 .mini-btn { border: 1px solid var(--border); background: rgba(20,24,48,0.7); color: var(--text); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-family: var(--font-body); font-weight: 600; font-size: 0.85rem; transition: all .15s; }
 .mini-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
 .mini-btn.ghost { color: var(--muted); }
-.sim-presets { display: flex; gap: 8px; flex-wrap: wrap; }
+.mini-btn.active-sec { background: linear-gradient(92deg, var(--good), var(--accent)); color: #04241a; border-color: transparent; }
+.sim-presets { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sec-label { color: var(--muted); font-weight: 600; font-size: 0.85rem; }
 
 /* Secuenciador */
 .seq { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); }
