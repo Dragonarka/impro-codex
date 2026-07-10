@@ -555,12 +555,19 @@ main { padding: 0; }
 .gif-btn:hover { border-color: var(--card-accent); }
 
 /* Tarjetas más densas (más movimientos visibles = cheat sheet) */
-#view-codice .grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+#view-codice .grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; align-items: start; }
 #view-codice .card-body { padding: 14px; gap: 9px; }
 #view-codice .card-head { gap: 8px; }
 /* franja de color arriba de cada tarjeta, para identidad visual sin banner */
 #view-codice .card { border-top: 3px solid var(--card-accent); }
 .card-emoji { width: 38px; height: 38px; font-size: 1.25rem; }
+
+/* Descripción corta = una línea, estilo cheat sheet */
+.card-desc { margin: 0; font-size: 0.85rem; line-height: 1.35; color: var(--muted); }
+#view-codice .card-body { gap: 8px; padding: 12px 14px; }
+.card-name { font-size: 1.02rem; }
+details.card-detail { margin-top: 2px; }
+.card-detail summary { font-weight: 700; }
 
 .sim-hint-swipe { display: none; } /* solo se muestra en móvil */
 

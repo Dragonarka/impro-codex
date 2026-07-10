@@ -25,6 +25,7 @@ const MOVES = [
     name: "Kamehameha",
     source: "Dragon Ball Z",
     emoji: "🌊",
+    short: "Carga lenta y explosión: contraste de dinámica.",
     concept:
       "Carga y descarga. Acumulás energía y tensión LENTO (respiración, contracción, foco en un punto) y la liberás DE GOLPE en una explosión direccional. Es puro contraste de dinámica: lento-controlado → rápido-explosivo.",
     cue: "Cuando la música tiene un build-up largo antes de un drop. Cargás durante la subida, soltás en el drop.",
@@ -42,6 +43,7 @@ const MOVES = [
     name: "Chidori",
     source: "Naruto",
     emoji: "⚡",
+    short: "Aislaciones rápidas, eléctricas y en staccato.",
     concept:
       "Aislaciones rápidas y staccato con calidad ELÉCTRICA: manos y brazos vibrando, hits secos y agudos, energía nerviosa concentrada en las extremidades. El sonido de mil pájaros = mil micro-acentos.",
     cue: "Para hi-hats rápidos, redobles o capas agudas de la música. Cuando querés textura nerviosa y detalle fino.",
@@ -59,6 +61,7 @@ const MOVES = [
     name: "Invocación (Kuchiyose)",
     source: "Naruto",
     emoji: "🐸",
+    short: "Gesto ritual y aparición súbita. Ideal en transiciones.",
     concept:
       "Invocás algo de la nada: un gesto RITUAL de preparación (sellos con las manos, plantar la palma en el piso) seguido de una APARICIÓN súbita — un cambio total de personaje, o una parte del cuerpo que cobra vida.",
     cue: "Transiciones. Cuando querés introducir un elemento nuevo (un nivel bajo, un personaje, un partner imaginario) con intención ceremonial.",
@@ -75,6 +78,7 @@ const MOVES = [
     name: "Teletransportación (Instant Transmission)",
     source: "Dragon Ball Z",
     emoji: "✨",
+    short: "Corte seco: desaparecés y reaparecés en otro punto.",
     concept:
       "Corte súbito de posición, nivel o dirección con calidad DESAPARECER-REAPARECER. El truco es la AUSENCIA de transición: estás acá, y al frame siguiente estás allá. (Dedos en la frente, opcional.)",
     cue: "Silencios y cortes en la música, o glitches. Para moverte por el escenario sin que se vea el camino.",
@@ -91,6 +95,7 @@ const MOVES = [
     name: "El Pájaro Loco",
     source: "Woody Woodpecker",
     emoji: "🐦",
+    short: "Groove cómico y errático tipo picoteo.",
     concept:
       "Groove cómico y errático: rebote de cabeza y torso tipo PICOTEO, acentos impredecibles, actitud burlona. Ligereza y humor por encima de la técnica. La referencia que todo hispanohablante entiende.",
     cue: "Música juguetona, swing, breaks graciosos. Cuando querés romper la seriedad y jugar con el público.",
@@ -108,6 +113,7 @@ const MOVES = [
     name: "Caminada de Obsession",
     source: "Aventura",
     emoji: "😱",
+    short: "Retroceso lento y terrorífico que genera tensión.",
     concept:
       "Retroceso lento con control absoluto y calidad inquietante: caminar hacia atrás como en peli de terror, sin rebote, arrastrando el peso. Domina el espacio y genera tensión alejándote.",
     cue: "Pasajes oscuros o tensos, o cuando querés crear suspenso separándote del público.",
@@ -121,6 +127,7 @@ const MOVES = [
     name: "Círculo de Doctor Strange",
     source: "Marvel",
     emoji: "🌀",
+    short: "Círculos y mandalas fluidos con las manos.",
     concept:
       "Mandalas en el aire: círculos concéntricos con manos y muñecas, fluidos y precisos, como abrir un portal. Aislación de brazos + continuidad circular sin cortes.",
     cue: "Capas melódicas sostenidas o sintes que giran. Cuando querés 'dibujar' en el aire (enlaza con el dibujar en el suelo de bachata).",
@@ -134,6 +141,7 @@ const MOVES = [
     name: "El VAR (repetición lenta)",
     source: "Fútbol",
     emoji: "📺",
+    short: "Un gesto y su repetición en cámara lenta.",
     concept:
       "Hacés un movimiento a tiempo real y lo 'revisás' en cámara lenta, como una repetición del VAR. Puro contraste de velocidad: normal → ultra-lento con todo el detalle.",
     cue: "Cuando la música se abre o hay un breakdown. Para remarcar un gesto y darle drama.",
@@ -147,6 +155,7 @@ const MOVES = [
     name: "Haaland Zen (hu hu)",
     source: "Fútbol",
     emoji: "🧘",
+    short: "Pausa zen: quietud total en medio del caos.",
     concept:
       "Pausa de meditación: te aquietás en calma total en medio del caos, como la celebración zen de Haaland. Contraste por ausencia de movimiento — el silencio como recurso.",
     cue: "Breaks, silencios o para resetear la energía. El 'no-movimiento' que resalta lo que viene.",
@@ -160,6 +169,7 @@ const MOVES = [
     name: "Granada en el corte",
     source: "Acción",
     emoji: "💣",
+    short: "Salto desde lejos que detona en el corte.",
     concept:
       "Anticipás un corte musical como una granada que lanzás: cae justo en el break y explotás con un salto desde lejos, aterrizando en el acento. Timing + explosión + espacio.",
     cue: "Cuando escuchás venir un golpe/drop. Preparás desde lejos y 'detonás' en el corte exacto.",
@@ -173,6 +183,7 @@ const MOVES = [
     name: "Wingardium Leviosa",
     source: "Harry Potter",
     emoji: "🪄",
+    short: "Levitación lenta y suspendida.",
     concept:
       "Levitación: elevás una parte del cuerpo (o tu partner imaginario) lento y suspendido, con la varita marcando el ascenso. Control de subida y suspensión.",
     cue: "Subidas melódicas y swells. Cuando querés dar sensación de flotar o elevar algo.",
@@ -186,6 +197,7 @@ const MOVES = [
     name: "Expelliarmus",
     source: "Harry Potter",
     emoji: "💥",
+    short: "Empuje seco que expulsa energía.",
     concept:
       "Hechizo de desarme: un empuje seco y direccional que 'expulsa' energía hacia afuera. Acento explosivo con parada firme en seco.",
     cue: "Hits fuertes o un golpe puntual. Para rematar una frase empujando hacia una dirección.",
@@ -199,6 +211,7 @@ const MOVES = [
     name: "Expecto Patronum",
     source: "Harry Potter",
     emoji: "🦌",
+    short: "Expansión 360° irradiando desde el centro.",
     concept:
       "Escudo expansivo: desde el centro irradiás energía en 360°, luminosa y protectora. Expansión total del cuerpo desde el core.",
     cue: "Momentos épicos o luminosos, cuando la música se agranda. Para abrirte al máximo.",
@@ -212,6 +225,7 @@ const MOVES = [
     name: "La Máscara de Dybala",
     source: "Fútbol",
     emoji: "🎭",
+    short: "Manos-máscara sobre la cara: personaje y actitud.",
     concept:
       "Gesto de máscara: las manos cubren y descubren el rostro como un gladiador, enmarcando la cara. Presentación y personaje — un momento de pura actitud.",
     cue: "Para presentarte, cerrar con actitud o marcar un cambio de personaje. Contacto visual fuerte.",
@@ -225,6 +239,7 @@ const MOVES = [
     name: "SIUUU (CR7)",
     source: "Fútbol",
     emoji: "🙌",
+    short: "Salto con giro y aterrizaje triunfal.",
     concept:
       "Salto con medio giro en el aire y aterrizaje firme con brazos abiertos, como el 'SIUUU' de Cristiano. Remate explosivo con presentación triunfal.",
     cue: "Cierre de frase, un gran acento o el final. Cuando querés rematar con presencia total.",
@@ -238,6 +253,7 @@ const MOVES = [
     name: "Toydai — por definir ✍️",
     source: "?",
     emoji: "❓",
+    short: "Por definir — contame qué es y lo completo.",
     concept:
       "TODO: Daniel, contame qué es 'toydai' y qué concepto de baile representa para vos, y completo la tarjeta. (¿Referencia de anime? ¿Un sonido? ¿Un personaje?)",
     cue: "—",

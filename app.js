@@ -170,7 +170,7 @@ function matches(move) {
   if (activeTag && !(move.tags || []).includes(activeTag)) return false;
   if (!query) return true;
   const hay = [
-    move.name, move.source, move.concept, move.cue, move.drill,
+    move.name, move.source, move.short, move.concept, move.cue, move.drill,
     ...(move.tags || []),
   ].join(" ").toLowerCase();
   return hay.includes(query);
@@ -224,37 +224,10 @@ function renderCard(move, index) {
   }
   body.appendChild(head);
 
-  // Concepto
-  body.appendChild(el("p", "card-concept", move.concept || ""));
+  // Descripción corta (una línea) — el detalle completo va en el desplegable.
+  body.appendChild(el("p", "card-desc", move.short || move.concept || ""));
 
-  // Sonidos + bpm
-  const soundRow = el("div", "sound-row");
-  (move.sounds || []).forEach((sound) => {
-    const icon = sound.type === "music" ? "🎵" : "🔊";
-    const btn = el("button", "sound-btn", icon + " " + (sound.label || "Sonido"));
-    btn.addEventListener("click", () => playSound(sound, btn));
-    soundRow.appendChild(btn);
-  });
-  if (move.bpm) {
-    const bpmBtn = el("button", "bpm-btn", "🥁 " + move.bpm + " BPM");
-    bpmBtn.title = "Cargar este tempo en el metrónomo";
-    bpmBtn.addEventListener("click", () => Metro.loadAndPlay(move.bpm));
-    soundRow.appendChild(bpmBtn);
-  }
-  if (soundRow.children.length) body.appendChild(soundRow);
-
-  // Detalle (cue + drill)
-  if ((move.cue && move.cue !== "—") || (move.drill && move.drill !== "—")) {
-    const det = el("details", "card-detail");
-    det.appendChild(el("summary", null, "Cómo usarlo"));
-    if (move.cue && move.cue !== "—")
-      det.appendChild(el("p", "detail-block", "<b>Cuándo:</b> " + move.cue));
-    if (move.drill && move.drill !== "—")
-      det.appendChild(el("p", "detail-block", "<b>Drill:</b> " + move.drill));
-    body.appendChild(det);
-  }
-
-  // Tags
+  // Tags (visibles, para escanear rápido)
   if ((move.tags || []).length) {
     const tags = el("div", "card-tags");
     move.tags.forEach((t) => {
@@ -263,6 +236,36 @@ function renderCard(move, index) {
       tags.appendChild(chip);
     });
     body.appendChild(tags);
+  }
+
+  // Desplegable: concepto completo + cuándo + drill + sonidos/bpm.
+  const hasDetail =
+    move.concept || (move.cue && move.cue !== "—") || (move.drill && move.drill !== "—");
+  if (hasDetail) {
+    const det = el("details", "card-detail");
+    det.appendChild(el("summary", null, "Ver más"));
+    if (move.concept) det.appendChild(el("p", "detail-block", move.concept));
+    if (move.cue && move.cue !== "—")
+      det.appendChild(el("p", "detail-block", "<b>Cuándo:</b> " + move.cue));
+    if (move.drill && move.drill !== "—")
+      det.appendChild(el("p", "detail-block", "<b>Drill:</b> " + move.drill));
+
+    const soundRow = el("div", "sound-row");
+    (move.sounds || []).forEach((sound) => {
+      const icon = sound.type === "music" ? "🎵" : "🔊";
+      const btn = el("button", "sound-btn", icon + " " + (sound.label || "Sonido"));
+      btn.addEventListener("click", () => playSound(sound, btn));
+      soundRow.appendChild(btn);
+    });
+    if (move.bpm) {
+      const bpmBtn = el("button", "bpm-btn", "🥁 " + move.bpm + " BPM");
+      bpmBtn.title = "Cargar este tempo en el metrónomo";
+      bpmBtn.addEventListener("click", () => Metro.loadAndPlay(move.bpm));
+      soundRow.appendChild(bpmBtn);
+    }
+    if (soundRow.children.length) det.appendChild(soundRow);
+
+    body.appendChild(det);
   }
 
   card.appendChild(body);
