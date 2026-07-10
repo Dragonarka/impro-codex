@@ -209,35 +209,19 @@ function renderCard(move, index) {
   card.style.setProperty("--card-accent", accentFor(move));
   card.style.animationDelay = Math.min((index || 0) * 55, 600) + "ms";
 
-  // Media (gif o emoji)
-  const media = el("div", "card-media");
-  if (move.gif) {
-    const img = el("img");
-    img.loading = "lazy";
-    img.alt = move.name;
-    img.src = move.gif;
-    img.addEventListener("error", () => {
-      media.innerHTML = "";
-      media.appendChild(el("span", "placeholder-emoji", move.emoji || "🎞️"));
-      media.appendChild(el("span", "gif-hint", "añadí " + move.gif));
-    });
-    media.appendChild(img);
-    media.appendChild(el("span", "gif-hint", "ampliar"));
-    media.addEventListener("click", () => {
-      if (media.querySelector("img")) openLightbox(move.gif, move.name);
-    });
-  } else {
-    media.appendChild(el("span", "placeholder-emoji", move.emoji || "🎴"));
-  }
-  card.appendChild(media);
-
   const body = el("div", "card-body");
 
-  // Encabezado
+  // Encabezado (chip emoji + nombre + fuente). Compacto, estilo cheat sheet.
   const head = el("div", "card-head");
-  head.appendChild(el("span", "card-emoji", move.emoji || ""));
+  head.appendChild(el("span", "card-emoji", move.emoji || "🎴"));
   head.appendChild(el("h3", "card-name", move.name));
   if (move.source && move.source !== "?") head.appendChild(el("span", "card-source", move.source));
+  if (move.gif) {
+    const gifBtn = el("button", "gif-btn", "🎞");
+    gifBtn.title = "Ver gif"; gifBtn.setAttribute("aria-label", "Ver gif");
+    gifBtn.addEventListener("click", () => openLightbox(move.gif, move.name));
+    head.appendChild(gifBtn);
+  }
   body.appendChild(head);
 
   // Concepto

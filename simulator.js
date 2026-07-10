@@ -214,6 +214,7 @@
         <div class="sim-tracks" id="sim-tracks"></div>
         <p class="sim-empty" id="sim-empty">Agregá instrumentos abajo y se van combinando 👇</p>
       </div>
+      <p class="sim-hint-swipe">← deslizá el secuenciador para ver los 8 tiempos →</p>
 
       <div class="palette">
         <span class="palette-label">Añadir instrumento:</span>
