@@ -188,6 +188,11 @@ const SOURCE_COLORS = {
   "Naruto": "#ff7b3d",
   "Dragon Ball Z": "#4ea8ff",
   "Woody Woodpecker": "#ffd24a",
+  "Marvel": "#e23636",
+  "Harry Potter": "#946b2d",
+  "Fútbol": "#2ecc71",
+  "Aventura": "#1abc9c",
+  "Acción": "#ff5d3b",
 };
 const PALETTE = ["#ff7b3d", "#4ea8ff", "#b06bff", "#46d19e", "#ff5d8f", "#ffd24a", "#3ddad7"];
 function accentFor(move) {
